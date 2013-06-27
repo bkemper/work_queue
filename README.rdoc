@@ -1,3 +1,7 @@
+= Fork Notes
+
+Instead of suppressing exceptions, I have provided a "failures" method to track failed tasks.  View the tc_work_queue_exceptions.rb for examples.
+
 = Description
 
 A work queue is designed to coordinate work between a producer and a pool of worker threads.

@@ -32,6 +32,7 @@ class WorkQueue
     @task_dequeued = @tasks.new_cond
     @task_completed = @tasks.new_cond
     @tasks_pending = 0
+    @failures = Array.new
   end
 
   ##
@@ -159,6 +160,10 @@ class WorkQueue
     end
   end
 
+  def failures
+    @failures
+  end
+
   private
 
   ##
@@ -211,9 +216,13 @@ class WorkQueue
       loop do
         proc, params = dequeue
         begin
-          proc.call(*params)
+          failure = catch :failure do
+            proc.call(*params)
+            nil
+          end
+          @failures.push(failure) unless failure.nil?
         rescue Exception => e
-          # Suppress Exception
+          @failures.push(e)
         end
         conclude
       end
